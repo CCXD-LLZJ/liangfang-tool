@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>专业量房工具</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
+<style>
+:root{--p:#1a73e8;--pd:#1557b0;--pl:#e8f0fe;--ok:#0d904f;--okl:#e6f4ea;--wn:#e37400;--wnl:#fef7e0;--ng:#d93025;--ngl:#fce8e6;--g1:#f8fafc;--g2:#f1f5f9;--g3:#e2e8f0;--g4:#cbd5e1;--g5:#94a3b8;--g6:#64748b;--g7:#475569;--g8:#1e293b;--sh:0 1px 3px rgba(0,0,0,.08);--r:14px;--rs:10px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC",sans-serif;background:var(--g2);color:var(--g8);line-height:1.6;padding-bottom:72px}
+.hd{background:var(--p);color:#fff;padding:14px 16px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.1)}.hd h1{font-size:17px;font-weight:600}.hd .sub{font-size:11px;opacity:.85;margin-top:1px}
+.ct{padding:14px;max-width:860px;margin:0 auto}.pg{display:none}.pg.on{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cd{background:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.c2{font-size:15px;font-weight:600;color:var(--p);margin-bottom:12px}
+.fg{margin-bottom:12px}.fl{display:block;font-size:12px;font-weight:500;color:var(--g6);margin-bottom:5px}
+.fi,.fs,.ft{width:100%;padding:11px 13px;border:1.5px solid var(--g4);border-radius:var(--rs);font-size:14px;background:#fff;-webkit-appearance:none}
+.fi:focus,.fs:focus{outline:none;border-color:var(--p)}.ft{min-height:68px;resize:vertical}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.iu{position:relative}.iu .u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--g5);pointer-events:none}.iu .fi{padding-right:36px}
+.bt{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:11px 18px;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;width:100%;transition:all .15s}
+.bp{background:var(--p);color:#fff}.bp:active{background:var(--pd)}.bs{background:var(--ok);color:#fff}.bg2{background:var(--g3);color:var(--g7)}
+.bsm{padding:7px 13px;font-size:13px}.bgrp{display:flex;gap:10px;margin-top:14px}.bgrp .bt{flex:1}
+.bn{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:6px 0;box-shadow:0 -1px 8px rgba(0,0,0,.06);z-index:100;border-top:1px solid var(--g3)}
+.ni{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 10px;color:var(--g5);font-size:10px;cursor:pointer;border:none;background:none}.ni.on{color:var(--p)}.ni .ic{font-size:20px}
+.pi{background:#fff;border-radius:var(--r);padding:13px 15px;margin-bottom:10px;box-shadow:var(--sh);cursor:pointer;border-left:4px solid var(--p);transition:transform .12s}.pi:active{transform:scale(.98)}
+.pn{font-weight:600;font-size:14px}.pd{font-size:11px;color:var(--g6);margin-top:6px}
+.pt{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;background:var(--pl);color:var(--p)}
+.es{text-align:center;padding:50px 20px;color:var(--g5)}.es .ic{font-size:42px;margin-bottom:10px;opacity:.5}
+.ri{background:#fff;border-radius:var(--r);padding:13px;margin-bottom:10px;box-shadow:var(--sh);display:flex;justify-content:space-between;align-items:center}
+.rnm{font-weight:600;font-size:14px}.rdt{font-size:11px;color:var(--g6);margin-top:3px}
+.ra{display:flex;gap:7px}.ra button{width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.be{background:var(--pl);color:var(--p)}.bdd{background:var(--ngl);color:var(--ng)}
+.st2{font-size:13px;font-weight:600;color:var(--g7);margin:18px 0 10px;padding-bottom:5px;border-bottom:2px solid var(--pl)}
+.tg{display:flex;background:var(--g3);border-radius:var(--rs);padding:3px}
+.tb{flex:1;padding:7px;border:none;background:transparent;border-radius:7px;font-size:12px;cursor:pointer;transition:all .2s;color:var(--g6)}.tb.on{background:#fff;color:var(--p);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tst{position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--g8);color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:all .25s;pointer-events:none}
+.tst.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* DASHBOARD */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dc{background:#fff;border-radius:var(--r);padding:14px;box-shadow:var(--sh)}.dc.f2{grid-column:1/-1}
+.dc-t{font-size:11px;color:var(--g6);font-weight:500;margin-bottom:6px;letter-spacing:.3px}
+.dc-v{font-size:28px;font-weight:700;line-height:1.1}.dc-u{font-size:12px;color:var(--g5);font-weight:400;margin-left:2px}
+.dc-s{font-size:11px;color:var(--g5);margin-top:3px}
+.gw{padding:10px 4px}.gb{width:100%;height:8px;background:var(--g3);border-radius:4px;position:relative;margin:8px 0 6px;overflow:visible}
+.gf{height:100%;border-radius:4px;transition:width .6s ease;position:relative}
+.gf.ok{background:var(--ok)}.gf.wn{background:var(--wn)}.gf.ng{background:var(--ng)}
+.gm{position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transform:translateX(-50%)}
+.gll{display:flex;justify-content:space-between;width:100%;font-size:9px;color:var(--g5)}
+.gs2{font-size:12px;font-weight:600;margin-top:2px}.gs2.ok{color:var(--ok)}.gs2.wn{color:var(--wn)}.gs2.ng{color:var(--ng)}
+.mr{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--g2)}.mr:last-child{border-bottom:none}
+.mic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.mf{flex:1;min-width:0}.mn2{font-size:11px;color:var(--g6)}.mv{font-size:15px;font-weight:600}.mrf{font-size:10px;color:var(--g5);margin-top:1px}
+.mb{flex-shrink:0;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.mb-ok{background:var(--okl);color:var(--ok)}.mb-wn{background:var(--wnl);color:var(--wn)}.mb-ng{background:var(--ngl);color:var(--ng)}
+.ac{border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;border-left:4px solid}
+.ac.inf{background:var(--pl);border-color:var(--p)}.ac.ok{background:var(--okl);border-color:var(--ok)}
+.ac.wn{background:var(--wnl);border-color:var(--wn)}.ac.ng{background:var(--ngl);border-color:var(--ng)}
+.ac-t{font-size:13px;font-weight:600;margin-bottom:4px}.ac-b{font-size:12px;color:var(--g7);line-height:1.7}.ac-b p{margin-bottom:3px}
+.ac-r{font-size:10px;color:var(--g5);margin-top:5px;font-style:italic}
+.rtt{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;margin-bottom:4px;-webkit-overflow-scrolling:touch}
+.rtt::-webkit-scrollbar{display:none}
+.rt2{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid var(--g3);background:#fff;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s;color:var(--g6)}
+.rt2.on{background:var(--p);color:#fff;border-color:var(--p);font-weight:600}
+.rh{margin:-14px -14px 18px;text-align:center;padding:22px 16px;background:var(--p);color:#fff}.rh h2{font-size:18px;margin-bottom:3px}.rh p{font-size:12px;opacity:.9}
+.rs2{margin-bottom:18px;page-break-inside:avoid}
+.rs2 h3{font-size:14px;color:var(--p);border-bottom:2px solid var(--pl);padding-bottom:5px;margin-bottom:10px}
+.rtb{width:100%;border-collapse:collapse;font-size:12px}
+.rtb th,.rtb td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--g3)}
+.rtb th{background:var(--g1);font-weight:600;color:var(--g7);font-size:11px}
+.rsb{background:var(--pl);border-radius:var(--rs);padding:14px;margin-top:10px}.rsb h4{color:var(--p);font-size:13px;margin-bottom:6px}
+.rdh{display:inline-block;background:var(--pl);color:var(--p);padding:0 5px;border-radius:3px;font-weight:600}
+.drr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--g3);font-size:13px}.drr:last-child{border-bottom:none}
+.dl{color:var(--g6)}.dv2{font-weight:500}
+.rt{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.ri2{background:linear-gradient(135deg,#f0f7ff,#fff);border:1px solid var(--pl);border-radius:var(--rs);padding:10px 12px;text-align:center}
+.ri2-ic{font-size:20px;margin-bottom:4px}.ri2-t{font-size:11px;color:var(--g6);margin-bottom:2px}.ri2-d{font-size:12px;font-weight:600;color:var(--p);line-height:1.4}
+.cvC{background:linear-gradient(135deg,#f0f4f8,#e8ecf1);border-radius:var(--rs);padding:12px;margin-top:12px;border:1px solid var(--g3);position:relative;overflow:visible}
+.cvC canvas{border-radius:8px;background:#0d1117;display:block;width:100%;height:360px;touch-action:none;cursor:grab}
+.cvC canvas:active{cursor:grabbing}
+.cvT{font-size:13px;font-weight:600;color:var(--g7);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cvL{font-size:10px;color:var(--g5);margin-top:6px}
+.cvCtrl{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.cvBtn{padding:5px 10px;border-radius:6px;border:1px solid var(--g4);background:#fff;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cvBtn:hover{border-color:var(--p);color:var(--p)}
+.cvBtn.on{background:var(--p);color:#fff;border-color:var(--p)}
+.cvBtn.on.cool{background:#1565c0;border-color:#1565c0}
+.cvBtn.on.heat{background:#e65100;border-color:#e65100}
+.cvSlider{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--g6)}
+.cvSlider input[type=range]{width:70px;accent-color:var(--p);height:4px}
+.cvSep{width:1px;height:20px;background:var(--g3);margin:0 2px}
+.ac-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ac-wrap .ac{margin-bottom:0}
+@media print{.bn,.hd,.bgrp{display:none!important}body{padding-bottom:0;background:#fff;color:#222}.ct{max-width:100%;padding:0}.cd,.dc{box-shadow:none;border:1px solid #ddd;background:#fff}.ri,.pi{background:#fff;border-color:#ddd}.ac{background:#f8f8f8}.rt2{border-color:#ccc}}
+@media(min-width:768px){.dg{grid-template-columns:1fr 1fr 1fr}.fr3{grid-template-columns:1fr 1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="hd"><h1>专业量房工具</h1><div class="sub">环境数据采集 · 国标对比分析 · 设计建议</div></div>
+<div class="ct">
+<div class="pg on" id="pg-pj"  data-pc=><div class="cd np2"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:17px">量房项目</h2><button class="bt bp bsm" style="width:auto" onclick="showNP()">+ 新建</button></div></div><div id="pjL"></div><div class="es" id="esP" style="display:none"><div class="ic">📋</div><p>暂无项目</p></div></div>
+<div class="pg" id="pg-pjf"><div class="cd"><div class="c2">🏠 项目信息</div><div class="fg"><label class="fl">客户姓名 *</label><input class="fi" id="cN" placeholder="请输入"></div><div class="fr"><div class="fg"><label class="fl">电话 *</label><input class="fi" id="cP" type="tel"></div><div class="fg"><label class="fl">日期</label><input class="fi" id="sD" type="date"></div></div><div class="fg"><label class="fl">地址 *</label><input class="fi" id="ad"></div><div class="fr"><div class="fg"><label class="fl">类型</label><select class="fs" id="hT"><option>平层</option><option>复式</option><option>别墅</option><option>公寓</option><option>商用</option></select></div><div class="fg"><label class="fl">面积</label><div class="iu"><input class="fi" id="aT" type="number"><span class="u">m²</span></div></div></div><div class="fr"><div class="fg"><label class="fl">楼层</label><input class="fi" id="fl2" type="number"></div><div class="fg"><label class="fl">总楼层</label><input class="fi" id="tf2" type="number"></div></div><div class="fg"><label class="fl">顾问</label><input class="fi" id="adv2"></div><div class="fg"><label class="fl">备注</label><textarea class="ft" id="pN"></textarea></div><div class="bgrp"><button class="bt bg2" onclick="goH()">取消</button><button class="bt bp" onclick="savePj()">保存并继续</button></div></div></div>
+<div class="pg" id="pg-rm"><div class="cd np2"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><h2 style="font-size:17px" id="rmT">房间测量</h2></div><button class="bt bp bsm" style="width:auto" onclick="showRF()">+ 添加房间</button></div></div><div id="rmL"></div><div class="bgrp np2" id="rmA" style="display:none"><button class="bt bg2" onclick="goH()">返回</button><button class="bt bp" onclick="goA()">查看分析</button></div></div>
+<div class="pg" id="pg-rf"><div class="cd"><div class="c2">📐 房间测量</div><input type="hidden" id="rId"><div class="fg"><label class="fl">房间 *</label><select class="fs" id="rNm"><option value="">选择</option><option>客厅</option><option>主卧</option><option>次卧</option><option>书房</option><option>儿童房</option><option>餐厅</option><option>厨房</option><option>卫生间</option><option>阳台</option><option value="其他">其他</option></select></div><div class="fg" id="crng" style="display:none"><input class="fi" id="rCn" placeholder="输入房间名称"></div><div class="st2">📏 空间</div><div class="fr3"><div class="fg"><label class="fl">长</label><div class="iu"><input class="fi" id="rL" type="number" step="0.01" onchange="cA()"><span class="u">m</span></div></div><div class="fg"><label class="fl">宽</label><div class="iu"><input class="fi" id="rW" type="number" step="0.01" onchange="cA()"><span class="u">m</span></div></div><div class="fg"><label class="fl">层高</label><div class="iu"><input class="fi" id="rH" type="number" step="0.01"><span class="u">m</span></div></div></div><div class="fr"><div class="fg"><label class="fl">面积</label><div class="iu"><input class="fi" id="rA" type="number" step="0.01" readonly style="background:var(--g1)"><span class="u">m²</span></div></div><div class="fg"><label class="fl">朝向</label><select class="fs" id="rDr"><option>东</option><option selected>南</option><option>西</option><option>北</option><option>东南</option><option>东北</option><option>西南</option><option>西北</option></select></div></div><div class="st2">🌡️ 温湿度</div><div class="fr"><div class="fg"><label class="fl">室内温度</label><div class="iu"><input class="fi" id="tI" type="number" step="0.1"><span class="u">°C</span></div></div><div class="fg"><label class="fl">室内湿度</label><div class="iu"><input class="fi" id="hI" type="number" step="0.1"><span class="u">%</span></div></div></div><div class="fr"><div class="fg"><label class="fl">室外温度</label><div class="iu"><input class="fi" id="tO" type="number" step="0.1"><span class="u">°C</span></div></div><div class="fg"><label class="fl">室外湿度</label><div class="iu"><input class="fi" id="hO" type="number" step="0.1"><span class="u">%</span></div></div></div><div class="st2">💨 通风</div><div class="fg"><label class="fl">室外风速</label><div class="iu"><input class="fi" id="wI" type="number" step="0.1" placeholder="0表示无风/气流不通畅"><span class="u">m/s</span></div></div><div class="st2">🔊 噪音</div><div class="fr"><div class="fg"><label class="fl">背景噪音</label><div class="iu"><input class="fi" id="nA" type="number" step="0.1"><span class="u">dB(A)</span></div></div><div class="fg"><label class="fl">设备噪音</label><div class="iu"><input class="fi" id="nE" type="number" step="0.1"><span class="u">dB(A)</span></div></div></div><div class="st2">🏗️ 结构</div><div class="fg"><label class="fl">墙体</label><div class="tg" id="tgW"><button class="tb on" onclick="sTg(this,'wT2','砖墙')">砖墙</button><button class="tb" onclick="sTg(this,'wT2','混凝土')">混凝土</button><button class="tb" onclick="sTg(this,'wT2','轻钢')">轻钢</button></div><input type="hidden" id="wT2" value="砖墙"></div><div class="fg"><label class="fl">钢筋</label><select class="fs" id="rS"><option value="正常">正常</option><option value="密集">密集</option><option value="主筋位">主筋位</option><option value="未检测">未检测</option></select></div><div class="fg"><label class="fl">梁体</label><input class="fi" id="bP2" placeholder="如：南侧有圈梁"></div><div class="st2">🪟 窗户</div><div class="fr"><div class="fg"><label class="fl">窗户面积</label><div class="iu"><input class="fi" id="wAr" type="number" step="0.01"><span class="u">m²</span></div></div><div class="fg"><label class="fl">类型</label><select class="fs" id="wTy"><option>单层玻璃</option><option selected>双层中空</option><option>三层中空</option><option>落地窗</option><option>飘窗</option></select></div></div><div class="st2">⚡ 现有空调</div><div class="fg"><div class="tg" id="tgA"><button class="tb on" onclick="sTg(this,'hAc','无')">无</button><button class="tb" onclick="sTg(this,'hAc','分体机')">分体机</button><button class="tb" onclick="sTg(this,'hAc','中央空调')">中央空调</button><button class="tb" onclick="sTg(this,'hAc','其他')">其他</button></div><input type="hidden" id="hAc" value="无"></div><div class="fg"><label class="fl">痛点</label><textarea class="ft" id="pPt"></textarea></div><div class="fg"><label class="fl">备注</label><textarea class="ft" id="rNt"></textarea></div><div class="bgrp"><button class="bt bg2" onclick="goRms()">取消</button><button class="bt bp" onclick="saveRm()">保存</button></div></div></div>
+<div class="pg" id="pg-an"><div id="anC"></div><div class="bgrp np2" style="margin-top:14px"><button class="bt bg2" onclick="goRms()">返回</button><button class="bt bp" onclick="goRpt()">完整报告</button></div></div>
+<div class="pg" id="pg-rpt"><div id="rptC"></div><div class="bgrp np2" style="margin-top:18px"><button class="bt bg2" onclick="goA()">返回</button><button class="bt bs" onclick="window.print()">打印/PDF</button></div></div>
+</div>
+<div class="bn np2"><button class="ni on" onclick="goH()"><span class="ic">📋</span><span>项目</span></button><button class="ni" onclick="if(cPid)goRms()"><span class="ic">📐</span><span>测量</span></button><button class="ni" onclick="if(cPid)goA()"><span class="ic">📊</span><span>分析</span></button><button class="ni" onclick="if(cPid)goRpt()"><span class="ic">📄</span><span>报告</span></button></div>
+<div class="tst" id="tst"></div>
+<script>
+const GB={noise:{sleep:33,daily:40},wind:{summer:.3,winter:.2}};
+const sn=()=>(new Date().getMonth()>=5&&new Date().getMonth()<=10)?'summer':'winter';
+const gN=nm=>/卧|房|书房|儿童/.test(nm)?GB.noise.sleep:GB.noise.daily;
+const gW=()=>sn()==='summer'?GB.wind.summer:GB.wind.winter;
+let P=JSON.parse(localStorage.getItem('daikin_projects')||'[]'),cPid=null,cRid=null;
+const $=id=>document.getElementById(id);
+function sp(id){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));const m={'pg-pj':0,'pg-rm':1,'pg-rf':1,'pg-an':2,'pg-rpt':3};document.querySelectorAll('.ni')[m[id]||0].classList.add('on');window.scrollTo(0,0)}
+function goH(){sp('pg-pj');rPj()}function goRms(){if(!cPid)return;sp('pg-rm');rRms()}function goA(){if(!cPid)return;sp('pg-an');rAn()}function goRpt(){if(!cPid)return;sp('pg-rpt');rRpt()}
+function toast(m){const t=$('tst');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200)}
+function esc(t){if(!t)return'';const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+function fmtD(d){if(!d)return'-';const v=new Date(d);return isNaN(v)?d:`${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`}
+function sv(){localStorage.setItem('daikin_projects',JSON.stringify(P))}
+function sTg(b,id,v){b.parentElement.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(id).value=v}
+function cA(){const l=parseFloat($('rL').value)||0,w=parseFloat($('rW').value)||0;if(l&&w)$('rA').value=(l*w).toFixed(2)}
+$('rNm').addEventListener('change',function(){$('crng').style.display=this.value==='其他'?'':'none'});
+function rPj(){const l=$('pjL'),e=$('esP');if(!P.length){l.innerHTML='';e.style.display='';return}e.style.display='none';l.innerHTML=P.sort((a,b)=>b.ct-a.ct).map(p=>`<div class="pi" onclick="oPj('${p.id}')"><div style="display:flex;justify-content:space-between"><div><div class="pn">${esc(p.cn)} - ${esc(p.ad2)}</div><div class="pd"><span>${esc(p.ht)}</span> <span>${p.at?p.at+'m²':''}</span></div></div><div style="text-align:right"><div style="font-size:11px;color:var(--g5)">${fmtD(p.sd)}</div><span class="pt">${(p.rooms||[]).length}间</span></div></div></div>`).join('')}
+function showNP(){cPid=null;['cN','cP','ad','aT','fl2','tf2','adv2','pN'].forEach(id=>$(id).value='');$('sD').value=new Date().toISOString().split('T')[0];sp('pg-pjf')}
+function savePj(){const n=$('cN').value.trim(),p=$('cP').value.trim(),a=$('ad').value.trim();if(!n||!p||!a){toast('请填写必填项');return}const o={id:cPid||'p'+Date.now(),cn:n,cp:p,sd:$('sD').value,ad2:a,ht:$('hT').value,at:$('aT').value,fl:$('fl2').value,tf:$('tf2').value,adv:$('adv2').value,nt:$('pN').value,ct:cPid?(P.find(x=>x.id===cPid)||{}).ct||Date.now():Date.now(),rooms:cPid?(P.find(x=>x.id===cPid)||{}).rooms||[]:[]};if(cPid){const i=P.findIndex(x=>x.id===cPid);if(i>=0)P[i]=o}else{P.push(o);cPid=o.id}sv();toast('已保存');goRms()}
+function oPj(id){cPid=id;goRms()}
+function rRms(){const p=P.find(x=>x.id===cPid);if(!p)return;$('rmT').textContent=p.cn+' - 房间测量';const l=$('rmL'),rms=p.rooms||[];$('rmA').style.display=rms.length?'flex':'none';if(!rms.length){l.innerHTML='<div class="es"><div class="ic">📐</div><p>暂无房间</p></div>';return}l.innerHTML=rms.map(r=>{const a=az(r);return`<div class="ri"><div style="flex:1"><div class="rnm">${esc(r.nm)} ${r.ar?'('+r.ar+'m²)':''}</div><div class="rdt">${r.tI?r.tI+'°C ':''}${r.hI?r.hI+'% ':''}${r.nA?r.nA+'dB ':''}${a.hp?'| 推荐'+a.hp:''}</div></div><div class="ra"><button class="be" onclick="event.stopPropagation();eRm('${r.id}')">✏️</button><button class="bdd" onclick="event.stopPropagation();dRm('${r.id}')">🗑️</button></div></div>`}).join('')}
+function showRF(){cRid=null;clrRF();sp('pg-rf')}
+function clrRF(){$('rId').value='';$('rNm').value='';$('rCn').value='';$('crng').style.display='none';['rL','rW','rH','rA','tI','hI','tO','hO','wI','nA','nE','wAr','bP2','pPt','rNt'].forEach(id=>$(id).value='');$('rDr').value='南';$('wTy').value='双层中空';$('rS').value='正常';sTg($('tgW').querySelector('.tb'),'wT2','砖墙');sTg($('tgA').querySelector('.tb'),'hAc','无')}
+function saveRm(){const s=$('rNm').value,nm=s==='其他'?$('rCn').value.trim():s;if(!nm){toast('请选择房间');return}const r={id:cRid||'r'+Date.now(),nm,l:$('rL').value,w:$('rW').value,h:$('rH').value,ar:$('rA').value,dr:$('rDr').value,tI:$('tI').value,hI:$('hI').value,tO:$('tO').value,hO:$('hO').value,wI:$('wI').value,nA:$('nA').value,nE:$('nE').value,wT:$('wT2').value,rS:$('rS').value,bP:$('bP2').value,wAr:$('wAr').value,wTy:$('wTy').value,hAc:$('hAc').value,pPt:$('pPt').value,rNt:$('rNt').value};const p=P.find(x=>x.id===cPid);if(!p)return;if(!p.rooms)p.rooms=[];if(cRid){const i=p.rooms.findIndex(x=>x.id===cRid);if(i>=0)p.rooms[i]=r}else p.rooms.push(r);sv();toast('已保存');goRms()}
+function eRm(id){cRid=id;const p=P.find(x=>x.id===cPid),r=p.rooms.find(x=>x.id===id);if(!r)return;const ps=['客厅','主卧','次卧','书房','儿童房','餐厅','厨房','卫生间','阳台'];if(ps.includes(r.nm)){$('rNm').value=r.nm;$('crng').style.display='none'}else{$('rNm').value='其他';$('rCn').value=r.nm;$('crng').style.display=''}['l','w','h','ar','tI','hI','tO','hO','wI','nA','nE','wAr','bP','pPt','rNt'].forEach(f=>{const el=$('r'+f.charAt(0).toUpperCase()+f.slice(1));if(el&&r[f]!==undefined)el.value=r[f]});$('rL').value=r.l||'';$('rW').value=r.w||'';$('rH').value=r.h||'';$('rA').value=r.ar||'';$('bP2').value=r.bP||'';$('pPt').value=r.pPt||'';$('rNt').value=r.rNt||'';$('rDr').value=r.dr||'南';$('wTy').value=r.wTy||'双层中空';$('rS').value=r.rS||'正常';$('tgW').querySelectorAll('.tb').forEach(b=>{if(b.textContent===(r.wT||'砖墙'))sTg(b,'wT2',r.wT||'砖墙')});$('tgA').querySelectorAll('.tb').forEach(b=>{if(b.textContent===(r.hAc||'无'))sTg(b,'hAc',r.hAc||'无')});sp('pg-rf')}
+function dRm(id){if(!confirm('删除？'))return;const p=P.find(x=>x.id===cPid);if(p&&p.rooms){p.rooms=p.rooms.filter(x=>x.id!==id);sv();rRms();toast('已删除')}}
+
+// ====== ANALYSIS ENGINE (GB-BASED + ROOM-AWARE) ======
+function evL(v,good,ok){if(v===undefined||v===null||isNaN(v))return{lv:'none',pct:50};const n=parseFloat(v);if(n>=good[0]&&n<=good[1])return{lv:'ok',pct:100};if(n>=ok[0]&&n<=ok[1])return{lv:'wn',pct:55};return{lv:'ng',pct:15}}
+const ROOM_CFG={
+  '客厅':{focus:['洁净度','温湿度','气流'],icon:'🛋️',needs:[
+    {dim:'洁净度',ic:'🦠',t:'除菌净化',d:'人流密集区域，易滋生细菌病毒。建议引导客户使用<strong>全热交换新风设备</strong>输送新风，室内机搭配<strong>流光能净化技术</strong>，新风引入时经过多层过滤（初效+中效+高效HEPA），PM2.5净化效率达98.4%，同时流光能分解甲醛、细菌、异味等有害物质，抑菌率99.99%，实现"新风输入+内循环净化"双重保障。'},
+    {dim:'洁净度',ic:'🌬️',t:'新风换气',d:'密闭客厅CO₂浓度易升高。建议引导客户配置<strong>全热交换新风系统</strong>，持续向室内输送经过过滤净化的室外新鲜空气，同时排出室内污浊空气。全热交换芯体可回收70%以上的冷/热量，节能效果显著。室内机再搭配流光能净化功能，形成完整的新风+净化方案。'},
+    {dim:'温湿度',ic:'🌡️',t:'温湿双控',d:'大落地窗客厅温湿度波动大。建议采用温湿独立控制，除湿不降温，体感更舒适。'},
+    {dim:'气流',ic:'💫',t:'无风感送风',d:'客厅面积大需均匀覆盖。康达效应气流贴天花板扩散，冷风不直吹，全屋温度均衡。'}
+  ]},
+  '主卧':{focus:['氧气含量','噪音','温湿度'],icon:'🛏️',needs:[
+    {dim:'氧气含量',ic:'🫁',t:'睡眠新风',d:'密闭卧室睡眠时CO₂浓度持续攀升，导致晨起头昏。建议联动CO₂浓度监测自动引入新风，国标要求新风量≥30m³/(h·人)。'},
+    {dim:'噪音',ic:'🔇',t:'超静音运行',d:'卧室国标噪音限值≤33dB(A)。建议选用最低17dB超静音室内机，搭配摆动式压缩机降噪。'},
+    {dim:'温湿度',ic:'🌙',t:'睡眠温控',d:'睡眠期间人体体温下降0.5-1°C。建议推荐<strong>温湿平衡型室内机</strong>，具备睡眠曲线自动微调，温湿双控更舒适。'},
+    {dim:'洁净度',ic:'🦠',t:'抑菌防霉',d:'床垫窗帘等织物易滋生螨虫霉菌。建议引导客户搭配新风设备，关窗时持续输送过滤新风避免密闭滋生细菌；室内机配备纳米水净膜抑菌技术（抑菌率99.9%），配合DryShock自清洁，形成"新风换气+内循环净化"双重防护。'}
+  ]},
+  '次卧':{focus:['氧气含量','噪音','洁净度'],icon:'🚪',needs:[
+    {dim:'氧气含量',ic:'🫁',t:'新风保障',d:'作为卧室同样需关注CO₂浓度。建议引导客户配置新风系统，关窗时持续输送经过过滤净化的新鲜空气，确保夜间氧气充足。'},
+    {dim:'噪音',ic:'🔇',t:'静音睡眠',d:'卧室国标噪音限值≤33dB(A)。推荐选用低噪音室内机；若临街，建议搭配新风设备关窗使用隔绝噪音。'},
+    {dim:'洁净度',ic:'🦠',t:'空气洁净',d:'建议引导客户搭配新风设备输送过滤新风，室内机配备抗菌滤网和自清洁功能，新风引入+内循环净化双重保障。'}
+  ]},
+  '儿童房':{focus:['氧气含量','洁净度','温湿度','风速'],icon:'👶',needs:[
+    {dim:'氧气含量',ic:'🫁',t:'充足氧气',d:'儿童新陈代谢快，CO₂浓度升高更易不适。建议引导客户配置新风系统，持续输送经过多层过滤净化的新鲜空气，确保大脑供氧充足，有助于发育和睡眠质量。'},
+    {dim:'洁净度',ic:'🛡️',t:'深度净化',d:'儿童免疫力较弱，对空气质量更敏感。建议引导客户使用新风设备输送过滤新风（初效+中效+高效HEPA），室内机搭配<strong>流光能净化+高密度滤网</strong>，分解甲醛、细菌等有害物质，PM2.5净化效率达98.4%，形成"新风输入+内循环净化"的双重防护。'},
+    {dim:'温湿度',ic:'🌡️',t:'恒温恒湿',d:'儿童体温调节能力差，温湿波动易感冒。建议温湿独立控制，稳定维持24-26°C/40-60%。'},
+    {dim:'风速',ic:'🍃',t:'柔和气流',d:'儿童对冷风敏感。康达效应送风使气流贴天花板扩散，避免直吹，国标要求室内风速≤0.3m/s。'}
+  ]},
+  '书房':{focus:['噪音','氧气含量','温湿度'],icon:'📚',needs:[
+    {dim:'噪音',ic:'🔇',t:'静音环境',d:'书房国标噪音限值≤40dB(A)，过低噪音影响专注。推荐选用低噪音室内机；若临街，建议搭配新风设备关窗使用隔绝室外噪音。'},
+    {dim:'氧气含量',ic:'🫁',t:'清醒新风',d:'长时间伏案CO₂浓度升高导致困倦。建议引导客户配置新风系统，关窗时持续输送过滤新风保持头脑清醒，新风量≥30m³/(h·人)。'},
+    {dim:'温湿度',ic:'🌡️',t:'恒温环境',d:'温度波动影响注意力。建议推荐温湿平衡型室内机，精准恒温恒湿，维持25°C/50%左右舒适工作环境。'}
+  ]},
+  '餐厅':{focus:['洁净度','气流'],icon:'🍽️',needs:[
+    {dim:'洁净度',ic:'🦠',t:'油烟异味',d:'餐厅紧邻厨房易受油烟影响。建议流光能技术分解异味分子，配合高密度滤网过滤颗粒物。'},
+    {dim:'气流',ic:'💨',t:'气流组织',d:'餐厅需快速排除异味。建议优化送回风路径，避免异味扩散至客厅卧室。'}
+  ]},
+  '厨房':{focus:['洁净度','温湿度'],icon:'🍳',needs:[
+    {dim:'洁净度',ic:'🔥',t:'油烟净化',d:'厨房油烟是室内空气主要污染源。建议选用厨房专用净化机型，油烟过滤效率达95%，搭配流光能分解残留异味。'},
+    {dim:'温湿度',ic:'🌡️',t:'高温高湿',d:'烹饪时温湿度急剧升高。建议配置大排风量设备，快速排出热湿气。'}
+  ]},
+  '卫生间':{focus:['洁净度','湿度'],icon:'🚿',needs:[
+    {dim:'洁净度',ic:'🦠',t:'防霉抑菌',d:'卫生间高湿环境易滋生霉菌。建议配置独立除湿功能，湿度传感器自动启停。'},
+    {dim:'洁净度',ic:'🌬️',t:'排风换气',d:'需保持良好通风。建议联动排风系统，防止异味和湿气扩散。'}
+  ]},
+  '阳台':{focus:['温湿度'],icon:'🌿',needs:[
+    {dim:'温湿度',ic:'🌡️',t:'温湿波动',d:'阳台直接受室外影响，温湿波动最大。建议关注密封性和隔热。'}
+  ]}
+};
+function getRtCfg(nm){
+  for(let k in ROOM_CFG)if(nm.includes(k))return ROOM_CFG[k];
+  return{focus:['温湿度','洁净度','噪音'],icon:'🏠',needs:[
+    {dim:'温湿度',ic:'🌡️',t:'温湿控制',d:'建议采用变频空调实现精准温湿控制。'},
+    {dim:'洁净度',ic:'🦠',t:'空气洁净',d:'建议配置净化功能保持室内空气品质。'},
+    {dim:'噪音',ic:'🔇',t:'低噪运行',d:'建议关注低噪音运行参数。'}
+  ]};
+}
+function az(r){
+  const a=parseFloat(r.ar)||0,h=parseFloat(r.h)||2.8,vol=a*h;
+  const tI=parseFloat(r.tI),hI=parseFloat(r.hI),tO=parseFloat(r.tO),hO=parseFloat(r.hO);
+  const nA=parseFloat(r.nA),nE=parseFloat(r.nE),wI=parseFloat(r.wI);
+  const wAr=parseFloat(r.wAr)||0,dr=r.dr||'',wT=r.wT||'',wTy=r.wTy||'';
+  const wr=a>0?wAr/a:0,tD=(!isNaN(tI)&&!isNaN(tO))?tO-tI:null;
+  let lf=150;if(['西','西南','西北'].includes(dr))lf+=30;if(['东','东南'].includes(dr))lf+=15;
+  if(wr>0.35)lf+=35;else if(wr>0.2)lf+=20;if(wTy==='单层玻璃')lf+=20;if(wTy==='落地窗'||wTy==='飘窗')lf+=15;if(wTy==='三层中空')lf-=10;
+  if(h>3.0)lf+=15;if(h>3.5)lf+=15;if(wT==='轻钢')lf+=10;
+  const load=a*lf;let hp='';if(load>0){if(load<=2300)hp='1匹';else if(load<=3000)hp='大1匹';else if(load<=3500)hp='1.5匹';else if(load<=5000)hp='2匹';else if(load<=7200)hp='3匹';else hp='3匹+'}
+  const tEv=evL(tI,[24,26],[20,28]),hEv=evL(hI,[40,60],[30,70]);
+  const nLim=gN(r.nm||''),nEv=evL(nA,[0,nLim],[0,nLim+10]);
+  const wLv=isNaN(wI)?'none':(wI>=0.3?'ok':(wI>0?'wn':'ng'));
+  const wPct=wLv==='ok'?95:(wLv==='wn'?60:(wLv==='ng'?20:0));
+  const wEv={lv:wLv,pct:wPct};
+  let sc=0,cnt=0;[tEv,hEv,nEv,wEv].forEach(e=>{if(e.lv!=='none'){sc+=e.pct;cnt++}});const avg=cnt>0?Math.round(sc/cnt):50;
+  // Advices (GB-based)
+  let adv=[];
+  if(!isNaN(tI)){
+    if(tI>28)adv.push({t:'ng',c:'温度',tt:`室温 ${tI}°C 超出 GB 50736 Ⅱ级上限`,b:`超出舒适范围24-26°C，长期高温影响睡眠和工作效率。<br>建议：优先改善遮阳隔热，冷量配置需充分考虑实际负荷。若同时湿度偏高，推荐<strong>温湿平衡型室内机</strong>或搭配更高规格配置，确保温湿双控能力充足。`,rf:'GB 50736-2012 表3.0.2'});
+    else if(tI<20)adv.push({t:'wn',c:'温度',tt:`室温 ${tI}°C 偏低`,b:`低于冬季Ⅱ级下限18°C，建议加强保温和制热能力。推荐温湿平衡型室内机，冬季恒温恒湿更舒适。`,rf:'GB 50736-2012'});
+    if(tD!==null&&tD>8)adv.push({t:'ng',c:'围护',tt:`室内外温差 ${tD.toFixed(1)}°C，隔热薄弱`,b:`热量持续渗透，空调将长时间高负荷运转。建议改善门窗密封或增大冷量。`,rf:'GB 50736-2012'});
+  }
+  if(!isNaN(hI)){
+    if(hI>70)adv.push({t:'ng',c:'湿度',tt:`湿度 ${hI}% 超标`,b:`高湿体感温度高3-5°C，易滋生霉菌螨虫。建议推荐<strong>温湿平衡型室内机</strong>（如大金零境/悬角系列），可独立除湿不降温，精准控制至40-60%区间。若面积较大或对品质要求高，建议搭配更高规格配置（如2匹或3匹机型），确保除湿能力充足。`,rf:'GB/T 18883-2022'});
+    else if(hI<30)adv.push({t:'wn',c:'湿度',tt:`湿度 ${hI}% 偏低`,b:`干燥易引发不适，建议推荐温湿平衡型室内机，具备加湿辅助功能，维持30-60%舒适区间。`,rf:'GB/T 18883-2022'});
+  }
+  if(!isNaN(nA)){if(nA>nLim+10)adv.push({t:'ng',c:'噪音',tt:`噪音 ${nA}dB(A) 远超国标 ≤${nLim}dB`,b:`<strong>方案一</strong>：推荐选用超静音室内机（如大金零境系列最低17dB），搭配全直流变频系统和摆动式压缩机降噪。<br><strong>方案二</strong>：推荐搭配<strong>全热交换新风设备</strong>，使用时可关闭窗户避免临街噪音影响，新风设备引入经过过滤的室外新鲜空气，同时隔绝室外噪音，实现"开新风、关窗户"的安静舒适环境。<br>两种方案可叠加使用，效果更佳。`,rf:'GB 55016-2021'});
+    else if(nA>nLim)adv.push({t:'wn',c:'噪音',tt:`噪音 ${nA}dB(A) 略超国标`,b:`略超限值 ${nLim}dB(A)，推荐选用低噪音室内机；若为临街环境，建议搭配新风设备，关窗使用可有效隔绝室外噪音。`,rf:'GB 55016-2021'});}
+  // Wind: outdoor wind speed — low means poor ventilation
+  if(!isNaN(wI)&&wI===0)adv.push({t:'ng',c:'通风',tt:`室外风速为 0，气流不通畅`,b:`该房间室外风速为零，说明自然通风条件极差，室内空气难以流通，CO₂浓度易升高。建议引导客户安装<strong>全热交换新风设备</strong>，在关窗状态下持续输送经过过滤净化的室外新鲜空气，同时回收70%以上的冷/热量，既保证通风换气又不增加空调能耗。`,rf:'GB 50736-2012'});
+  else if(!isNaN(wI)&&wI>0&&wI<0.3)adv.push({t:'wn',c:'通风',tt:`室外风速 ${wI}m/s 偏低，通风效果欠佳`,b:`室外风速较低，自然通风能力不足。建议引导客户配置<strong>全热交换新风系统</strong>，在通风不佳时提供机械换气保障，同时全热交换芯体可回收70%以上冷热量，节能效果显著。`,rf:'GB 50736-2012'});
+  else if(!isNaN(wI)&&wI>=0.3)adv.push({t:'ok',c:'通风',tt:`室外风速 ${wI}m/s，通风良好`,b:`该房间室外风速正常，自然通风条件良好。建议客户日常多开窗通风，利用自然气流保持室内空气新鲜，节约能源。如需更高空气质量保障，可搭配新风设备进一步提升。`,rf:'GB 50736-2012'});
+  if(h>3.5)adv.push({t:'ng',c:'层高',tt:`层高 ${h}m，体积 ${vol.toFixed(1)}m³`,b:`热空气上浮明显，建议：①冷量增加20-30%；②选用3D立体送风方案。`,rf:'GB 50736-2012'});
+  else if(h>3.0)adv.push({t:'wn',c:'层高',tt:`层高 ${h}m，体积增 ${((h/2.8-1)*100).toFixed(0)}%`,b:`建议选用立体送风，避免上冷下热分层。`,rf:'GB 50736-2012'});
+  if(wr>0.35)adv.push({t:'ng',c:'围护',tt:`窗墙比 ${(wr*100).toFixed(0)}% 超建议值30%`,b:`大面积玻璃是热量入侵主通道。建议：①更换Low-E中空玻璃或加装遮阳；②冷量额外增加15-20%。`,rf:'GB 50736-2012'});
+  else if(wr>0.2)adv.push({t:'wn',c:'围护',tt:`窗墙比 ${(wr*100).toFixed(0)}% 偏高`,b:`窗户是围护薄弱点，建议关注密封性。`,rf:'GB 50736-2012'});
+  if(wTy==='单层玻璃')adv.push({t:'wn',c:'围护',tt:'单层玻璃窗隔热差',b:`K值约5.8W/(m²·K)，远高于双层中空。建议短期放大冷量，长期更换门窗。`,rf:'GB 50736-2012'});
+  if(wT==='轻钢')adv.push({t:'wn',c:'围护',tt:'轻钢墙体热惰性小',b:`室内温度易受室外波动影响，建议选用全直流变频精准控温系统。`,rf:'GB 50736-2012'});
+  if(r.rS==='主筋位')adv.push({t:'ng',c:'结构',tt:'主筋位置禁止打孔',b:`必须调整内机安装位置，需与施工队确认。`,rf:'施工规范'});
+  if(r.rS==='密集')adv.push({t:'wn',c:'结构',tt:'钢筋密集需避让',b:`建议使用专业避筋方案，安装前精确定位。`,rf:'施工规范'});
+  // Room-type specific tips (data-driven)
+  const cfg=getRtCfg(r.nm||'');
+  let roomTips=[];
+  cfg.needs.forEach(n=>{
+    let trigger=false,extra='';
+    if(n.dim==='洁净度'&&(r.wTy==='单层玻璃'||wr>0.3||hI>70)){trigger=true;extra=hI>70?'实测湿度'+hI+'%，高湿环境净化需求更迫切。':(wr>0.3?'大窗墙比室外污染物渗透多。':'单层玻璃密封性差。');}
+    if(n.dim==='氧气含量'&&(a>15||h>3)){trigger=true;extra=a>15?'房间面积'+a+'m²，需更大新风量。':('层高'+h+'m，体积达'+vol.toFixed(0)+'m³，需充足换气。');}
+    if(n.dim==='噪音'&&!isNaN(nA)&&nA>35){trigger=true;extra='实测背景噪音'+nA+'dB(A)，对室内机静音要求更高。';}
+    if(n.dim==='风速'&&!isNaN(wI)&&wI>0.3){trigger=true;extra='实测风速'+wI+'m/s，需优化气流避免直吹。';}
+    if(n.dim==='温湿度'&&!isNaN(tI)&&(tI>28||tI<20)){trigger=true;extra='实测温度'+tI+'°C，温湿独立控制可精准调节。';}
+    if(n.dim==='温湿度'&&!isNaN(hI)&&(hI>70||hI<30)){trigger=true;extra='实测湿度'+hI+'%，独立除湿能力是关键。';}
+    roomTips.push({dim:n.dim,ic:n.ic,t:n.t,d:n.d+(extra?'<br><span style="color:var(--p);font-weight:500">现场数据：'+extra+'</span>':''),trig:trigger});
+  });
+  return{a,h,vol,wr,tD,load,hp,tEv,hEv,nEv,wEv,nLim,avg,adv,roomTips,cfg};
+}
+
+// ====== 3D ROOM MODEL + AIRFLOW SIM (THREE.JS) ======
+var _3dInstances=[];
+function dispose3D(){
+  _3dInstances.forEach(function(o){if(o.anim)cancelAnimationFrame(o.anim);if(o.renderer)o.renderer.dispose();});
+  _3dInstances=[];
+}
+// Particle texture (soft circle)
+var _pTex=null;
+function getPTex(){
+  if(_pTex)return _pTex;
+  var c=document.createElement('canvas');c.width=64;c.height=64;
+  var x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(0.3,'rgba(255,255,255,0.6)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=g;x.fillRect(0,0,64,64);
+  _pTex=new THREE.CanvasTexture(c);return _pTex;
+}
+function drawRoomCV(id,r,d){
+  var container=document.getElementById(id);if(!container)return;
+  container.innerHTML='';
+  var l=parseFloat(r.l)||3,w=parseFloat(r.w)||3,h=parseFloat(r.h)||2.8;
+  var wAr=parseFloat(r.wAr)||0,dr=r.dr||'南';
+  var maxDim=Math.max(l,w,h),sc=5/maxDim;
+  var rl=l*sc,rw=w*sc,rh=h*sc;
+  // Center of room (origin offset so room centers at 0,0,0)
+  var cx=rl/2,cy=rh/2,cz=rw/2;
+  // State
+  var state={isCool:true,angle:30,speed:1.0,wallOp:0.35};
+  var roomName=(r.nm||'').toLowerCase();
+  var isBedroom=roomName.indexOf('卧')>=0||roomName.indexOf('儿童')>=0||roomName.indexOf('主卧')>=0||roomName.indexOf('次卧')>=0;
+  var isLiving=roomName.indexOf('客厅')>=0||roomName.indexOf('起居')>=0;
+  var isChild=roomName.indexOf('儿童')>=0;
+  // AC position: ceiling near right wall, blowing left across room
+  var acX=0,acY=rh-0.18,acZ=0;
+  var oc={x:0,y:rh-0.25,z:0};
+  // Renderer
+  var renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  var cw=container.clientWidth||400,ch=360;
+  renderer.setSize(cw,ch);
+  renderer.setClearColor(0x0d1117,1);
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;
+  var canvasEl=renderer.domElement;
+  container.appendChild(canvasEl);
+  // Scene
+  var scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0d1117);
+  scene.fog=new THREE.FogExp2(0x0d1117,0.012);
+  // Camera — look at center of room
+  var camera=new THREE.PerspectiveCamera(45,cw/ch,0.1,200);
+  var diag=Math.sqrt(rl*rl+rh*rh+rw*rw);
+  var _sph={r:diag*1.1,theta:Math.PI*0.75,phi:Math.PI*0.3};
+  var _isDown=false,_lX=0,_lY=0;
+  function updCam(){
+    camera.position.x=_sph.r*Math.sin(_sph.phi)*Math.sin(_sph.theta);
+    camera.position.y=_sph.r*Math.cos(_sph.phi);
+    camera.position.z=_sph.r*Math.sin(_sph.phi)*Math.cos(_sph.theta);
+    camera.lookAt(0,cy*0.4,0);
+  }
+  function setView(name){
+    if(name==='top'){_sph.theta=Math.PI*0.75;_sph.phi=0.15;_sph.r=diag*1.2;}
+    else if(name==='front'){_sph.theta=Math.PI*0.75;_sph.phi=Math.PI*0.35;_sph.r=diag*1.1;}
+    else if(name==='side'){_sph.theta=0;_sph.phi=Math.PI*0.35;_sph.r=diag*1.1;}
+    else if(name==='iso'){_sph.theta=Math.PI*0.75;_sph.phi=Math.PI*0.3;_sph.r=diag*1.1;}
+    updCam();
+  }
+  setView('iso');
+  canvasEl.addEventListener('pointerdown',function(e){_isDown=true;_lX=e.clientX;_lY=e.clientY;});
+  window.addEventListener('pointerup',function(){_isDown=false;});
+  window.addEventListener('pointermove',function(e){
+    if(!_isDown)return;
+    _sph.theta-=(e.clientX-_lX)*0.006;
+    _sph.phi=Math.max(0.05,Math.min(Math.PI*0.92,_sph.phi-(e.clientY-_lY)*0.006));
+    _lX=e.clientX;_lY=e.clientY;updCam();
+  });
+  canvasEl.addEventListener('wheel',function(e){e.preventDefault();_sph.r=Math.max(1.5,Math.min(30,_sph.r+e.deltaY*0.008));updCam();},{passive:false});
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff,0.5));
+  scene.add(new THREE.HemisphereLight(0x88aacc,0x444422,0.4));
+  var dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(rl*1.2,rh*2,rw*1.2);dl.castShadow=true;
+  dl.shadow.mapSize.set(1024,1024);dl.shadow.camera.near=0.1;dl.shadow.camera.far=diag*3;
+  dl.shadow.camera.left=-diag;dl.shadow.camera.right=diag;dl.shadow.camera.top=diag;dl.shadow.camera.bottom=-diag;
+  scene.add(dl);
+  // Groups
+  var bGroup=new THREE.Group();scene.add(bGroup);
+  var aGroup=new THREE.Group();scene.add(aGroup);
+  // Floor
+  var floorMat=new THREE.MeshStandardMaterial({color:0xddd8cc,roughness:0.8,metalness:0.05});
+  var floor=new THREE.Mesh(new THREE.PlaneGeometry(rl,rw),floorMat);
+  floor.rotation.x=-Math.PI/2;floor.position.y=0;floor.receiveShadow=true;bGroup.add(floor);
+  // Grid
+  var gridCols=Math.max(4,Math.ceil(Math.max(rl,rw)));
+  var gh=new THREE.GridHelper(Math.max(rl,rw)*1.1,gridCols,0x334455,0x1e2636);
+  gh.position.y=0.005;bGroup.add(gh);
+  // Walls
+  var wallMats=[];
+  function mkWallMat(op){
+    return new THREE.MeshPhongMaterial({color:0xe8e4dc,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:op>0.7});
+  }
+  var wallS=mkWallMat(0.5),wallT=mkWallMat(state.wallOp);
+  var walls=[];
+  function mkWall2(w2,h2,x,y,z,ry){
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(w2,h2),wallT.clone());
+    m.position.set(x,y,z);if(ry)m.rotation.y=ry;m.castShadow=true;m.receiveShadow=true;bGroup.add(m);walls.push(m);return m;
+  }
+  mkWall2(rl,rh,0,cy,-rw/2,0);
+  mkWall2(rl,rh,0,cy,rw/2,Math.PI);
+  mkWall2(rw,rh,rl/2,cy,0,Math.PI/2);
+  mkWall2(rw,rh,-rl/2,cy,0,-Math.PI/2);
+  // Room edges
+  var edgeColor=0x00e676;
+  bGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(rl,rh,rw)),new THREE.LineBasicMaterial({color:edgeColor,transparent:true,opacity:0.7})));
+  // Window
+  var winY=rh*0.55,winH=rh*0.4;
+  if(wAr>0){
+    var winW=Math.min(rl*0.5,Math.max(0.8,wAr*sc*1.2));
+    var win=new THREE.Mesh(new THREE.PlaneGeometry(winW,winH),new THREE.MeshPhongMaterial({color:0x42a5f5,transparent:true,opacity:0.2,side:THREE.DoubleSide}));
+    win.position.set(0,winY,-rw/2+0.02);bGroup.add(win);
+    var ft=0.03;
+    [[winW,ft,0,winY+winH/2,-rw/2+0.03],[winW,ft,0,winY-winH/2,-rw/2+0.03],[ft,winH,-winW/2,winY,-rw/2+0.03],[ft,winH,winW/2,winY,-rw/2+0.03]].forEach(function(f){
+      var fm=new THREE.Mesh(new THREE.PlaneGeometry(f[0],f[1]),new THREE.MeshPhongMaterial({color:0x90caf9}));
+      fm.position.set(f[2],f[3],f[4]);bGroup.add(fm);
+    });
+  }
+  // AC unit
+  var acW=rl*0.3,acH=0.22,acD=0.14;
+  var acGroup=new THREE.Group();
+  var acBody=new THREE.Mesh(new THREE.BoxGeometry(acW,acH,acD),new THREE.MeshStandardMaterial({color:0xfafafa,roughness:0.3,metalness:0.1}));
+  acBody.castShadow=true;acGroup.add(acBody);
+  var slot=new THREE.Mesh(new THREE.BoxGeometry(acW*0.7,0.015,acD*0.7),new THREE.MeshStandardMaterial({color:0x222222,roughness:0.9}));
+  slot.position.set(0,-acH*0.32,acD*0.05);acGroup.add(slot);
+  var louverGrp=new THREE.Group();
+  for(var li=0;li<10;li++){
+    var lv=new THREE.Mesh(new THREE.BoxGeometry(acW*0.62,0.012,acD*0.25),new THREE.MeshStandardMaterial({color:0xbbbbbb,roughness:0.5}));
+    lv.position.set(0,-acH*0.28,acD*0.12+li*0.006);louverGrp.add(lv);
+  }
+  acGroup.add(louverGrp);
+  var ledMat=new THREE.MeshPhongMaterial({color:0x1a73e8,emissive:0x1a73e8,emissiveIntensity:0.8});
+  var led=new THREE.Mesh(new THREE.SphereGeometry(0.018,8,8),ledMat);
+  led.position.set(acW*0.38,acH*0.35,acD*0.5);acGroup.add(led);
+  var acLight=new THREE.PointLight(0x1a73e8,0.4,2.5);
+  acLight.position.set(0,-acH*0.3,0.3);acGroup.add(acLight);
+  // Place AC against right wall, centered on Z, facing -X (into room)
+  acX=rl/2-acD/2-0.02;
+  acGroup.rotation.y=-Math.PI/2;
+  bGroup.add(acGroup);
+  function positionAC(){
+    acGroup.position.set(acX,acY,acZ);
+    oc.x=acX-acD*0.3;oc.y=acY-0.22*0.3;oc.z=acZ;
+  }
+  // Labels
+  function mkLabel(text,pos,color,sz){
+    var cv2=document.createElement('canvas');cv2.width=256;cv2.height=64;
+    var ctx2=cv2.getContext('2d');ctx2.font='bold '+(sz||24)+'px sans-serif';
+    ctx2.fillStyle=color||'#8899bb';ctx2.textAlign='center';ctx2.textBaseline='middle';
+    ctx2.fillText(text,128,32);
+    var tex=new THREE.CanvasTexture(cv2);tex.needsUpdate=true;
+    var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true}));
+    sp.position.copy(pos);sp.scale.set(1.0,0.25,1);bGroup.add(sp);
+  }
+  mkLabel(l+'m',new THREE.Vector3(0,-0.25,0),'#667788',20);
+  mkLabel(w+'m',new THREE.Vector3(-rl/2-0.35,cy,0),'#667788',20);
+  mkLabel(h+'m',new THREE.Vector3(rl/2+0.35,cy,0),'#667788',20);
+  if(wAr>0)mkLabel('窗户',new THREE.Vector3(0,winY-winH/2-0.25,-rw/2+0.1),'#42a5f5',18);
+  // ====== ROOM FURNITURE ======
+  var furMat=new THREE.MeshStandardMaterial({color:0x8d6e63,roughness:0.7,metalness:0.05});
+  var furMat2=new THREE.MeshStandardMaterial({color:0x78909c,roughness:0.6,metalness:0.1});
+  var furMat3=new THREE.MeshStandardMaterial({color:0xbcaaa4,roughness:0.7,metalness:0.02});
+  if(isLiving){
+    // Sofa against back wall (z=rw/2 side)
+    var sofaW=rl*0.45,sofaH=0.35,sofaD=rw*0.12;
+    var sofa=new THREE.Mesh(new THREE.BoxGeometry(sofaW,sofaH,sofaD),furMat);
+    sofa.position.set(0,sofaH/2,rw/2-sofaD/2);sofa.castShadow=true;bGroup.add(sofa);
+    // Sofa back
+    var sbk=new THREE.Mesh(new THREE.BoxGeometry(sofaW,sofaH*0.6,sofaD*0.15),furMat);
+    sbk.position.set(0,sofaH+sofaH*0.3,rw/2-sofaD*0.08);bGroup.add(sbk);
+    // Coffee table
+    var ctW=rl*0.2,ctH=0.12,ctD=rw*0.1;
+    var ct=new THREE.Mesh(new THREE.BoxGeometry(ctW,ctH,ctD),furMat2);
+    ct.position.set(0,ctH/2,rw/2-sofaD-ctD/2-rw*0.08);ct.castShadow=true;bGroup.add(ct);
+    // TV cabinet against front wall (near window wall)
+    var tvW=rl*0.35,tvH=0.15,tvD=rw*0.06;
+    var tv=new THREE.Mesh(new THREE.BoxGeometry(tvW,tvH,tvD),furMat3);
+    tv.position.set(0,tvH/2,-rw/2+tvD/2+0.05);bGroup.add(tv);
+    // TV screen (dark)
+    var scrn=new THREE.Mesh(new THREE.PlaneGeometry(tvW*0.9,tvH*2.5),new THREE.MeshStandardMaterial({color:0x111111,roughness:0.2,metalness:0.3}));
+    scrn.position.set(0,tvH+1.2,-rw/2+tvD+0.07);bGroup.add(scrn);
+  }else if(isChild){
+    // Small bed against back wall
+    var bedW=rl*0.4,bedH=0.22,bedD=rw*0.3;
+    var bed=new THREE.Mesh(new THREE.BoxGeometry(bedW,0.15,bedD),furMat3);
+    bed.position.set(-rl*0.05,0.075,rw/2-bedD/2);bed.receiveShadow=true;bGroup.add(bed);
+    // Headboard
+    var hb=new THREE.Mesh(new THREE.BoxGeometry(bedW,bedH,0.04),furMat3);
+    hb.position.set(-rl*0.05,bedH/2+0.15,rw/2-bedD+0.02);bGroup.add(hb);
+    // Desk
+    var dkW=rl*0.35,dkH=0.22,dkD=rw*0.12;
+    var dk=new THREE.Mesh(new THREE.BoxGeometry(dkW,dkH,dkD),furMat2);
+    dk.position.set(rl*0.15,dkH/2,-rw/2+dkD/2+0.05);dk.castShadow=true;bGroup.add(dk);
+    // Chair
+    var ch=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.18,0.15),furMat);
+    ch.position.set(rl*0.15,0.09,-rw/2+dkD+0.15+0.08);bGroup.add(ch);
+  }else if(isBedroom){
+    // Double bed against back wall
+    var bedW=rl*0.5,bedD=rw*0.35;
+    var bed=new THREE.Mesh(new THREE.BoxGeometry(bedW,0.15,bedD),furMat3);
+    bed.position.set(0,0.075,rw/2-bedD/2);bed.receiveShadow=true;bGroup.add(bed);
+    // Headboard
+    var hb=new THREE.Mesh(new THREE.BoxGeometry(bedW,0.5,0.04),furMat3);
+    hb.position.set(0,0.4,rw/2-bedD+0.02);bGroup.add(hb);
+    // Nightstands
+    var nsS=0.15;
+    var ns1=new THREE.Mesh(new THREE.BoxGeometry(nsS,0.18,nsS),furMat2);
+    ns1.position.set(-bedW/2-nsS/2-0.05,0.09,rw/2-bedD+nsS/2+0.05);bGroup.add(ns1);
+    var ns2=new THREE.Mesh(new THREE.BoxGeometry(nsS,0.18,nsS),furMat2);
+    ns2.position.set(bedW/2+nsS/2+0.05,0.09,rw/2-bedD+nsS/2+0.05);bGroup.add(ns2);
+    // Wardrobe against side wall
+    var wdW=rl*0.12,wdH=rh*0.6,wdD=rw*0.2;
+    var wd=new THREE.Mesh(new THREE.BoxGeometry(wdW,wdH,wdD),new THREE.MeshStandardMaterial({color:0x5d4037,roughness:0.8}));
+    wd.position.set(rl/2-wdW/2,wdH/2,rw/2-wdD*1.5);wd.castShadow=true;bGroup.add(wd);
+  }
+  // Direction
+  var dirs={'南':0,'北':Math.PI,'东':Math.PI/2,'西':-Math.PI/2,'东南':Math.PI/4,'东北':-Math.PI/4,'西南':-Math.PI*3/4,'西北':Math.PI*3/4};
+  bGroup.rotation.y=dirs[dr]||0;
+  // ====== PARTICLES ======
+  var PCOUNT=800;
+  var pData=[];
+  var pGeom=new THREE.BufferGeometry();
+  var pPos=new Float32Array(PCOUNT*3),pCol=new Float32Array(PCOUNT*3);
+  pGeom.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  pGeom.setAttribute('color',new THREE.BufferAttribute(pCol,3));
+  var pMat=new THREE.PointsMaterial({size:0.08,map:getPTex(),vertexColors:true,transparent:true,opacity:0.7,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  var pPoints=new THREE.Points(pGeom,pMat);
+  aGroup.add(pPoints);
+  positionAC();
+  function getDirVec(){
+    return {
+      fx:-1,fy:0,fz:0,
+      rx:0,rxz:1
+    };
+  }
+  function resetP(p){
+    var dv=getDirVec();
+    p.x=oc.x+(Math.random()-0.5)*acW*0.5;
+    p.y=oc.y+(Math.random()-0.5)*0.05;
+    p.z=oc.z+(Math.random()-0.5)*acW*0.5;
+    var spd=(0.012+Math.random()*0.006)*state.speed;
+    var lateral=(Math.random()-0.5)*spd*0.3;
+    p.vx=dv.fx*spd+dv.rx*lateral;
+    p.vy=dv.fy*spd*(state.isCool?1:-1);
+    p.vz=dv.fz*spd+dv.rxz*lateral;
+    if(!state.isCool)p.vy=Math.abs(p.vy);
+    p.life=0.8+Math.random()*0.5;p.age=0;p.phase='supply';p.temp=0;
+  }
+  for(var i=0;i<PCOUNT;i++){pData.push({x:0,y:0,z:0,vx:0,vy:0,vz:0,life:0,age:0,phase:'supply',temp:0});resetP(pData[i]);pData[i].life=Math.random();}
+  // ====== STREAMLINES ======
+  function rebuildSL(){
+    while(aGroup.children.length>1)aGroup.remove(aGroup.children[1]);
+    var slColor=state.isCool?0x42a5f5:0xff7043;
+    var slMat=new THREE.MeshPhongMaterial({color:slColor,transparent:true,opacity:0.2});
+    var dv=getDirVec();
+    var slCount=8;
+    for(var s=0;s<slCount;s++){
+      var pts=[];var t=(s-slCount/2+0.5)/slCount;
+      var px=oc.x,py=oc.y,pz=oc.z+t*acW*0.4;
+      var vx=dv.fx*0.015*state.speed,vy=dv.fy*0.015*state.speed,vz=0;
+      for(var j=0;j<120;j++){
+        pts.push(new THREE.Vector3(px,py,pz));
+        if(state.isCool)vy-=0.0003;else vy+=0.0005;
+        vx+=(Math.random()-0.5)*0.0008;
+        vz+=(Math.random()-0.5)*0.0005;
+        px+=vx;py+=vy;pz+=vz;
+        if(py<0.05){py=0.05;vy=Math.abs(vy)*0.3;}
+        if(py>rh-0.05){py=rh-0.05;vy=-Math.abs(vy)*0.3;}
+        if(Math.abs(px)>rl/2-0.05){px=Math.sign(px)*(rl/2-0.05);vx*=-0.3;}
+        if(Math.abs(pz)>rw/2-0.05){pz=Math.sign(pz)*(rw/2-0.05);vz*=-0.3;}
+      }
+      if(pts.length<3)continue;
+      var curve=new THREE.CatmullRomCurve3(pts);
+      var tube=new THREE.Mesh(new THREE.TubeGeometry(curve,80,0.006,4,false),slMat);
+      aGroup.add(tube);
+    }
+  }
+  rebuildSL();
+  // ====== ANIMATE ======
+  var animId;
+  function animate(){
+    animId=requestAnimationFrame(animate);
+    ledMat.emissiveIntensity=0.5+Math.sin(Date.now()*0.003)*0.35;
+    var lc=state.isCool?0x1a73e8:0xff6d00;
+    ledMat.color.setHex(lc);ledMat.emissive.setHex(lc);acLight.color.setHex(lc);
+    var dv=getDirVec();
+    for(var i=0;i<PCOUNT;i++){
+      var p=pData[i];p.age++;p.life-=0.002;
+      if(p.life<=0){if(Math.random()<0.25){p.phase='return';p.vy*=0.1;}else{resetP(p);}continue;}
+      if(p.phase==='supply'){
+        p.vy+=(dv.fy*0.014*state.speed-p.vy)*0.015;
+        if(state.isCool){p.vy-=0.00015;if(p.y<-rh/2+0.1){p.y=-rh/2+0.1;p.vy=0;}}
+        else{p.vy+=0.00035;if(p.y>rh/2-0.1){p.y=rh/2-0.1;p.vy=-0.0005;}}
+      }
+      p.vx+=(Math.random()-0.5)*0.0006;p.vy+=(Math.random()-0.5)*0.0003;p.vz+=(Math.random()-0.5)*0.0005;
+      p.vx*=0.994;p.vy*=0.994;p.vz*=0.994;
+      p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;
+      if(p.x<-rl/2+0.05){p.x=-rl/2+0.05;p.vx=Math.abs(p.vx)*0.2;}
+      if(p.x>rl/2-0.05){p.x=rl/2-0.05;p.vx=-Math.abs(p.vx)*0.2;}
+      if(p.y<-rh/2+0.05){p.y=-rh/2+0.05;p.vy=Math.abs(p.vy)*0.15;}
+      if(p.y>rh/2-0.05){p.y=rh/2-0.05;p.vy=-Math.abs(p.vy)*0.2;}
+      if(p.z<-rw/2+0.05){p.z=-rw/2+0.05;p.vz=Math.abs(p.vz)*0.2;}
+      if(p.z>rw/2-0.05){p.z=rw/2-0.05;p.vz=-Math.abs(p.vz)*0.2;}
+      p.temp+=state.isCool?0.0015:0.001;if(p.temp>1)p.temp=1;
+      pPos[i*3]=p.x;pPos[i*3+1]=p.y;pPos[i*3+2]=p.z;
+      var t=p.temp;
+      if(state.isCool){pCol[i*3]=0.15+0.25*(1-t);pCol[i*3+1]=0.4+0.35*(1-t);pCol[i*3+2]=0.75+0.25*(1-t);}
+      else{pCol[i*3]=0.85+0.15*t;pCol[i*3+1]=0.25+0.2*(1-t);pCol[i*3+2]=0.08+0.05*(1-t);}
+    }
+    pGeom.attributes.position.needsUpdate=true;
+    pGeom.attributes.color.needsUpdate=true;
+    renderer.render(scene,camera);
+  }
+  animate();
+  _3dInstances.push({renderer:renderer,anim:animId,cvs:canvasEl});
+  // ====== CONTROLS ======
+  var ctrl=document.createElement('div');ctrl.className='cvCtrl';
+  ctrl.innerHTML=
+    '<button class="cvBtn cool on" data-m="cool">❄ 制冷</button>'+
+    '<button class="cvBtn heat" data-m="heat">🔥 制热</button>'+
+    '<div class="cvSep"></div>'+
+    '<button class="cvBtn on" data-d="front">↓下吹</button>'+
+    '<button class="cvBtn" data-d="horizontal">→水平</button>'+
+    '<button class="cvBtn" data-d="up">↑上吹</button>'+
+    '<div class="cvSep"></div>'+
+    '<button class="cvBtn" data-v="top">俯视</button>'+
+    '<button class="cvBtn" data-v="front">正视</button>'+
+    '<button class="cvBtn" data-v="side">侧视</button>'+
+    '<button class="cvBtn" data-v="iso">透视</button>'+
+    '<div class="cvSep"></div>'+
+    '<div class="cvSlider"><span>风速</span><input type="range" min="0.3" max="2" step="0.1" value="1" class="cvSpd"><span class="cvSpdV">1.0</span></div>'+
+    '<div class="cvSlider"><span>透明</span><input type="range" min="0.1" max="0.8" step="0.05" value="0.35" class="cvWOp"></div>';
+  container.appendChild(ctrl);
+  // Mode
+  ctrl.querySelectorAll('[data-m]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      state.isCool=this.dataset.m==='cool';
+      ctrl.querySelectorAll('[data-m]').forEach(function(b){b.classList.remove('on');});
+      this.classList.add('on');rebuildSL();
+    });
+  });
+  // Direction
+  ctrl.querySelectorAll('[data-d]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var dd=this.dataset.d;
+      if(dd==='front')state.angle=60;else if(dd==='horizontal')state.angle=5;else if(dd==='up')state.angle=85;
+      ctrl.querySelectorAll('[data-d]').forEach(function(b){b.classList.remove('on');});
+      this.classList.add('on');rebuildSL();
+    });
+  });
+  // View
+  ctrl.querySelectorAll('[data-v]').forEach(function(btn){
+    btn.addEventListener('click',function(){setView(this.dataset.v);});
+  });
+  // Speed
+  ctrl.querySelector('.cvSpd').addEventListener('input',function(){
+    state.speed=parseFloat(this.value);
+    ctrl.querySelector('.cvSpdV').textContent=state.speed.toFixed(1);rebuildSL();
+  });
+  // Wall opacity
+  ctrl.querySelector('.cvWOp').addEventListener('input',function(){
+    var v=parseFloat(this.value);state.wallOp=v;
+    walls.forEach(function(w){w.material.opacity=v;w.material.depthWrite=v>0.7;});
+  });
+}
+
+// ====== GAUGE HELPER ======
+function gaugeHtml(val,min,max,goodR,label,unit){
+  const pct=Math.min(100,Math.max(0,((val-min)/(max-min))*100));
+  const inGood=val>=goodR[0]&&val<=goodR[1];
+  const lv=inGood?'ok':(val<goodR[0]-5||val>goodR[1]+5?'ng':'wn');
+  const cls=lv==='ok'?'ok':lv==='wn'?'wn':'ng';
+  const mColor=lv==='ok'?'var(--ok)':lv==='wn'?'var(--wn)':'var(--ng)';
+  const mLeft=Math.min(100,Math.max(0,pct));
+  const statusTxt=inGood?'达标':(lv==='wn'?'偏离':'超标');
+  return`<div class="gw"><div class="dc-t">${label}</div><div style="font-size:22px;font-weight:700;text-align:center">${val!==undefined&&val!==null?val:'--'}<span style="font-size:11px;color:var(--g5);font-weight:400">${unit}</span></div><div class="gb"><div class="gf ${cls}" style="width:${mLeft}%"></div><div class="gm" style="left:${mLeft}%;background:${mColor}"></div></div><div class="gll"><span>${min}${unit}</span><span style="color:var(--${lv==='ok'?'ok':'ng'})">${goodR[0]}-${goodR[1]}${unit}</span><span>${max}${unit}</span></div><div class="gs2 ${cls}">${statusTxt}</div></div>`;
+}
+
+// ====== RENDER ANALYSIS (DASHBOARD) ======
+function rAn(){
+  const p=P.find(x=>x.id===cPid);if(!p)return;
+  const rms=p.rooms||[];
+  if(!rms.length){$('anC').innerHTML='<div class="es"><div class="ic">📊</div><p>请先添加房间测量数据</p></div>';return}
+  // Overview cards
+  let tA=0,tL=0;
+  rms.forEach(r=>{const a=az(r);tA+=a.a||0;tL+=a.load||0});
+  let html=`<div class="dg">
+    <div class="dc"><div class="dc-t">测量房间</div><div class="dc-v">${rms.length}<span class="dc-u">间</span></div></div>
+    <div class="dc"><div class="dc-t">总面积</div><div class="dc-v">${Math.round(tA)}<span class="dc-u">m²</span></div></div>
+    <div class="dc"><div class="dc-t">总冷负荷</div><div class="dc-v">${Math.round(tL)}<span class="dc-u">W</span></div></div>
+  </div>`;
+  // Per-room dashboard
+  html+=`<div class="room-row">`;
+  rms.forEach((r,i)=>{
+    const d=az(r);
+    const tI=parseFloat(r.tI),hI=parseFloat(r.hI),nA=parseFloat(r.nA),wI=parseFloat(r.wI);
+    const scoreCls=d.avg>=80?'ok':d.avg>=50?'wn':'ng';
+    const scoreTxt=d.avg>=80?'良好':d.avg>=50?'一般':'需改善';
+    html+=`<div class="cd" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="c2" style="margin-bottom:0">🚪 ${esc(r.nm)} ${r.ar?'('+r.ar+'m²)':''}</div>
+        <div style="display:flex;gap:6px;align-items:center"><span class="mb mb-${scoreCls}">${scoreTxt} ${d.avg}分</span>${d.hp?`<span class="mb mb-ok">推荐${d.hp}</span>`:''}</div>
+      </div>
+      <div class="dg">`;
+    // Gauges
+    if(!isNaN(tI))html+=gaugeHtml(tI,15,40,[24,26],'室内温度','°C');
+    if(!isNaN(hI))html+=gaugeHtml(hI,10,100,[40,60],'室内湿度','%');
+    if(!isNaN(nA))html+=gaugeHtml(nA,20,80,[0,d.nLim],'背景噪音','dB');
+    if(!isNaN(wI)&&wI>=0)html+=gaugeHtml(wI,0,2.0,[0.3,2.0],'室外风速','m/s');
+    html+=`</div>`;
+    // Metric list for structural data
+    const metrics=[];
+    if(r.dr)metrics.push({ic:'🧭',bg:'#e8f0fe',nm:'朝向',val:r.dr,ref:''});
+    if(r.h)metrics.push({ic:'📐',bg:'#fef7e0',nm:'层高',val:r.h+'m',ref:d.h>3?'偏高':''});
+    if(r.wT)metrics.push({ic:'🧱',bg:'#fce8e6',nm:'墙体',val:r.wT,ref:''});
+    const wr2=d.wr>0?`${(d.wr*100).toFixed(0)}%`:'-';
+    metrics.push({ic:'🪟',bg:'#e6f4ea',nm:'窗墙比',val:wr2,ref:d.wr>0.35?'偏高':''});
+    if(r.wTy)metrics.push({ic:'🪟',bg:'#f8fafc',nm:'窗户类型',val:r.wTy,ref:''});
+    if(d.tD!==null)metrics.push({ic:'🌡️',bg:'#fce8e6',nm:'室内外温差',val:d.tD.toFixed(1)+'°C',ref:d.tD>8?'隔热薄弱':''});
+    if(r.hAc&&r.hAc!=='无')metrics.push({ic:'⚡',bg:'#e8f0fe',nm:'现有空调',val:r.hAc,ref:''});
+    if(r.rS&&r.rS!=='正常')metrics.push({ic:'🏗️',bg:'#fef7e0',nm:'钢筋分布',val:r.rS,ref:r.rS==='主筋位'?'需避让':''});
+    if(metrics.length){
+      html+=`<div class="dc f2" style="padding:10px 14px;margin-top:2px">`;
+      metrics.forEach(m=>{html+=`<div class="mr"><div class="mic" style="background:${m.bg}">${m.ic}</div><div class="mf"><div class="mn2">${m.nm}</div><div class="mv">${m.val}${m.ref?` <span style="font-size:11px;color:var(--wn);font-weight:400">${m.ref}</span>`:''}</div></div></div>`});
+      html+=`</div>`;
+    }
+    // Advice cards (GB-based)
+    if(d.adv.length){
+      html+=`<div class="ac-wrap" style="margin-top:10px">`;
+      d.adv.forEach(a=>{
+        const cls=a.t==='ng'?'ng':a.t==='wn'?'wn':a.t==='ok'?'ok':'inf';
+        html+=`<div class="ac ${cls}"><div class="ac-t">${a.c} · ${a.tt}</div><div class="ac-b">${a.b}</div>${a.rf?`<div class="ac-r">依据：${a.rf}</div>`:''}</div>`;
+      });
+      html+=`</div>`;
+    }
+    // Room-type specific needs (product-aware)
+    if(d.roomTips&&d.roomTips.length){
+      html+=`<div class="cd f2" style="margin-top:10px;padding:14px;background:var(--bg2)">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span style="font-size:16px">${d.cfg.icon||'🏠'}</span><span class="c2" style="margin-bottom:0">${esc(r.nm)} · 专属需求</span>
+        <span style="font-size:10px;color:var(--ink3);margin-left:auto">关注：${d.cfg.focus.join(' / ')}</span></div>
+        <div class="rt">`;
+      d.roomTips.forEach(t=>{
+        const bdr=t.trig?'2px solid var(--p)':'1px solid rgba(0,212,255,.12)';
+        const bg2=t.trig?'rgba(0,212,255,.1)':'var(--bg3)';
+        html+=`<div class="ri2" style="border:${bdr};background:${bg2}"><div class="ri2-ic">${t.ic}</div><div class="ri2-t">${t.dim}</div><div class="ri2-d">${t.t}</div></div>`;
+      });
+      html+=`</div><div style="margin-top:8px">`;
+      d.roomTips.forEach(t=>{
+        const cls2=t.trig?'ng':'inf';
+        html+=`<div class="ac ${cls2}" style="margin-bottom:6px"><div class="ac-t">${t.ic} ${t.t}</div><div class="ac-b">${t.d}</div></div>`;
+      });
+      html+=`</div></div>`;
+    }
+    // 3D model
+    html+=`<div class="cvC"><div class="cvT">🏗️ 3D气流模拟 · ${esc(r.nm)}</div><div id="cv-${r.id}" style="width:100%;height:360px;border-radius:8px;overflow:hidden"></div><div class="cvL">🖱️拖拽旋转 · 🔍滚轮缩放 · 可切换模式/风向/视角</div></div>`;
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  // Recommendation section
+  html+=`<div class="cd" style="margin-top:4px"><div class="c2">💡 推荐建议</div>`;
+  const allAdv=[].concat(...rms.map(r=>az(r).adv));
+  // Dedupe by category
+  const seen=new Set();
+  allAdv.forEach(a=>{const k=a.c+a.tt;if(seen.has(k))return;seen.add(k);
+    const cls=a.t==='ng'?'ng':a.t==='wn'?'wn':'inf';
+    html+=`<div class="ac ${cls}" style="margin-bottom:6px"><div class="ac-t">${a.tt}</div><div class="ac-b">${a.b}</div></div>`;
+  });
+  if(!allAdv.length)html+=`<p style="font-size:13px;color:var(--ink3)">当前数据均在国标范围内，暂无改善建议。</p>`;
+  html+=`</div>`;
+  $('anC').innerHTML=html;
+  dispose3D();
+  const p2=P.find(x=>x.id===cPid);
+  if(p2)(p2.rooms||[]).forEach(r=>{const el=document.getElementById('cv-'+r.id);if(el)drawRoomCV('cv-'+r.id,r,az(r));});
+}
+
+// ====== RENDER REPORT ======
+function rRpt(){
+  const p=P.find(x=>x.id===cPid);if(!p)return;
+  const rms=p.rooms||[];
+  let tA=0,tL=0;const allAdv=[];
+  let rmsHtml='';
+  rms.forEach(r=>{
+    const d=az(r);tA+=d.a||0;tL+=d.load||0;
+    d.adv.forEach(a=>{if(!allAdv.find(x=>x.c+a.tt===a.c+a.tt))allAdv.push(a)});
+    const tD=d.tD!==null?d.tD.toFixed(1):null;
+    const wr2=d.wr>0?(d.wr*100).toFixed(0)+'%':'-';
+    rmsHtml+=`<div class="rs2"><h3>${esc(r.nm)} ${r.ar?'('+r.ar+'m²)':''}</h3>
+      <table class="rtb"><tr><th>项目</th><th>实测值</th><th>国标要求</th><th>评价</th></tr>
+      ${r.tI?`<tr><td>温度</td><td>${r.tI}°C</td><td>24-26°C (GB 50736)</td><td><span class="mb mb-${d.tEv.lv}">${d.tEv.lv==='ok'?'达标':'偏离'}</span></td></tr>`:''}
+      ${r.hI?`<tr><td>湿度</td><td>${r.hI}%</td><td>40-60% (GB/T 18883)</td><td><span class="mb mb-${d.hEv.lv}">${d.hEv.lv==='ok'?'达标':'偏离'}</span></td></tr>`:''}
+      ${r.nA?`<tr><td>噪音</td><td>${r.nA}dB(A)</td><td>≤${d.nLim}dB (GB 55016)</td><td><span class="mb mb-${d.nEv.lv}">${d.nEv.lv==='ok'?'达标':d.nEv.lv==='wn'?'略超':'超标'}</span></td></tr>`:''}
+      ${r.wI!==undefined&&r.wI!==''?`<tr><td>室外风速</td><td>${r.wI}m/s</td><td>≥0.3m/s 为通风良好</td><td><span class="mb mb-${parseFloat(r.wI)>=0.3?'ok':parseFloat(r.wI)>0?'wn':'ng'}">${parseFloat(r.wI)>=0.3?'良好':parseFloat(r.wI)>0?'偏低':'不通畅'}</span></td></tr>`:''}
+      <tr><td>朝向/层高</td><td>${r.dr} / ${r.h||'?'}m</td><td>层高>3m需特殊设计</td><td>${d.h>3?`<span class="mb mb-wn">注意</span>`:'正常'}</td></tr>
+      <tr><td>窗墙比</td><td>${wr2}</td><td>建议≤30%</td><td>${d.wr>0.35?`<span class="mb mb-ng">偏高</span>`:d.wr>0.2?`<span class="mb mb-wn">关注</span>`:'正常'}</td></tr>
+      <tr><td>墙体/窗户</td><td>${r.wT||'-'} / ${r.wTy||'-'}</td><td>关注隔热性能</td><td>${r.wTy==='单层玻璃'?`<span class="mb mb-wn">隔热差</span>`:'正常'}</td></tr>
+      <tr><td>结构</td><td>${r.rS||'-'}</td><td>避开主筋位置</td><td>${r.rS==='主筋位'?`<span class="mb mb-ng">需避让</span>`:r.rS==='密集'?`<span class="mb mb-wn">注意</span>`:'正常'}</td></tr>
+${d.hp?`<tr><td colspan="4" style="background:var(--okl)"><strong>推荐配置：${d.hp} | 估算负荷：${Math.round(d.load)}W</strong></td></tr>`:''}
+      </table>`;
+    if(d.adv.length){
+      rmsHtml+=`<div style="margin-top:10px">`;
+      d.adv.forEach(a=>{const cls=a.t==='ng'?'ng':a.t==='wn'?'wn':'inf';
+        rmsHtml+=`<div class="ac ${cls}" style="margin-bottom:6px"><div class="ac-t">${a.c} · ${a.tt}</div><div class="ac-b">${a.b}</div>${a.rf?`<div class="ac-r">依据：${a.rf}</div>`:''}</div>`});
+      rmsHtml+=`</div>`;
+    }
+    // Room-type needs in report
+    if(d.roomTips&&d.roomTips.length){
+      rmsHtml+=`<div style="margin-top:12px;padding:12px;background:#f8faff;border-radius:var(--rs);border:1px solid var(--pl)">
+        <div style="font-size:13px;font-weight:600;color:var(--p);margin-bottom:8px">${d.cfg.icon||'🏠'} ${esc(r.nm)} · 专属需求关注点（关注维度：${d.cfg.focus.join('、')}）</div>
+        <table class="rtb"><tr><th>维度</th><th>需求点</th><th>功能建议</th><th>触发</th></tr>`;
+      d.roomTips.forEach(t=>{
+        rmsHtml+=`<tr><td>${t.dim}</td><td><strong>${t.t}</strong></td><td style="font-size:11px">${t.d.replace(/<br>.*$/,'').replace(/<[^>]+>/g,'')}</td><td>${t.trig?'<span class="mb mb-ng">现场触发</span>':'<span class="mb mb-ok">常规建议</span>'}</td></tr>`;
+      });
+      rmsHtml+=`</table></div>`;
+    }
+    rmsHtml+=`</div>`;
+    // Room model in report
+    rmsHtml+=`<div class="cvC" style="margin-top:12px"><div class="cvT">🏗️ 3D气流模拟 · ${esc(r.nm)}</div><div id="cvr-${r.id}" style="width:100%;height:360px;border-radius:8px;overflow:hidden"></div><div class="cvL">🖱️拖拽旋转 · 🔍滚轮缩放 · 可切换模式/风向/视角</div></div>`;
+    rmsHtml+=`</div>`;
+  });
+  // Project advice
+  let projAdvHtml='';
+  if(allAdv.length){
+    projAdvHtml=`<div class="rs2"><h3>设计建议汇总</h3>`;
+    allAdv.forEach(a=>{const cls=a.t==='ng'?'ng':a.t==='wn'?'wn':'inf';
+      projAdvHtml+=`<div class="ac ${cls}" style="margin-bottom:6px"><div class="ac-t">${a.tt}</div><div class="ac-b">${a.b}</div>${a.rf?`<div class="ac-r">依据：${a.rf}</div>`:''}</div>`});
+    projAdvHtml+=`</div>`;
+  }
+  $('rptC').innerHTML=`
+    <div class="rh"><h2>专业量房报告</h2><p>${esc(p.cn)} | ${esc(p.ad2)}</p><p style="margin-top:4px">${fmtD(p.sd)} | 顾问：${esc(p.adv||'')}</p></div>
+    <div class="rs2"><h3>一、项目信息</h3>
+      <div class="drr"><span class="dl">客户</span><span class="dv2">${esc(p.cn)}</span></div>
+      <div class="drr"><span class="dl">地址</span><span class="dv2">${esc(p.ad2)}</span></div>
+      <div class="drr"><span class="dl">类型</span><span class="dv2">${esc(p.ht)} ${p.at?p.at+'m²':''}</span></div>
+      <div class="drr"><span class="dl">楼层</span><span class="dv2">${p.fl||'-'} / ${p.tf||'-'}</span></div>
+      <div class="drr"><span class="dl">测量</span><span class="dv2">${rms.length}间 / ${Math.round(tA)}m² / ${Math.round(tL)}W</span></div>
+    </div>
+    <div class="rs2"><h3>二、房间数据与国标对比</h3>${rmsHtml}</div>
+    ${projAdvHtml}
+    <div class="rs2"><h3>三、总体评估</h3><div class="rsb"><h4>配置建议</h4>
+      <p style="font-size:13px">本房屋共${rms.length}间，${Math.round(tA)}m²，总冷负荷约${Math.round(tL)}W。以上建议基于现场实测数据与国标对比分析，最终选型请结合专业设计深化。</p>
+    </div></div>
+    <div style="text-align:center;margin-top:36px;color:var(--ink3);font-size:11px"><p>— 由空气顾问现场量房后生成 —</p></div>`;
+  const p2=P.find(x=>x.id===cPid);
+  dispose3D();
+  if(p2)(p2.rooms||[]).forEach(r=>{const el=document.getElementById('cvr-'+r.id);if(el)drawRoomCV('cvr-'+r.id,r,az(r));});
+}
+rPj();
+</script>
+</body>
+</html>
